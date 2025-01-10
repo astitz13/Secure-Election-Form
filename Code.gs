@@ -20,7 +20,7 @@ function sendEmails() {
     // Get corresponding verification code
     const code = verificationCodes[i];
     // Send email
-    GmailApp.sendEmail(address, `Verification Code for Election Form "${formName}"`, `You have been invited to vote in the election, ${formName}!\n\nYour verification code is: ${code}\n\nLink to form: ${formLink}\n\nAs you place your vote, please remember to only vote once and do not share this verification code with anyone. Also, please make sure you entered your verification code correctly. It is recommended to copy and paste the code from this email. If you fail to provide a valid code, your vote will not be counted. If multiple submissions use the same code, the election must be re-run to ensure security.\n\nThank you for voting!`);
+    GmailApp.sendEmail(address, `Verification Code for Election Form ${formName}`, `You have been invited to vote in the election, ${formName}!\n\nYour verification code is: ${code}\n\nLink to form: ${formLink}\n\nAs you place your vote, please remember to only vote once and do not share this verification code with anyone. Also, please make sure you entered your verification code correctly. It is recommended to copy and paste the code from this email. If you fail to provide a valid code, your vote will not be counted. If multiple submissions use the same code, the election must be re-run to ensure security.\n\nThank you for voting!`);
   }
 
   // Variable to store shuffled verification codes
@@ -47,6 +47,14 @@ function sendEmails() {
   for(let i = 0; i < shuffledCodes.length; i++) {
     // Store the verification codes in B2:B range
     sheet.getRange("B" + (i + 2)).setValue(shuffledCodes[i]);
+  }
+
+  // Delete sent emails
+  const threads = GmailApp.search(`subject:"Verification Code for Election Form ${formName}"`, 0, data.length);
+  GmailApp.moveThreadsToTrash(threads);
+  for(let thread of threads) {
+    Logger.log(thread.getId())
+    Gmail.Users.Threads.remove("me", thread.getId());
   }
 }
 
