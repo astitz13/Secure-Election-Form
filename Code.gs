@@ -49,3 +49,12 @@ function sendEmails() {
     sheet.getRange("B" + (i + 2)).setValue(shuffledCodes[i]);
   }
 }
+
+// Function to add a button to send emails
+function onOpen() {
+  let ui = SpreadsheetApp.getUi();
+
+  ui.createMenu('Secure Elections')
+      .addItem('Send Emails', 'sendEmails')
+      .addToUi();
+}
