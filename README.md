@@ -62,7 +62,8 @@ Anyways, here are the steps to run your election:
 2. Ensure the form name and form link are valid and correct.
 3. Click `Secure Elections > Send Emails` from the spreadsheet.
 4. Wait for everyone to vote. Everyone should receive an email with a validation code and a link to submit the form.
-5. Check the results! After everyone has voted, you can first check to make sure a re-run isn't needed, and then use your election logic you added in (or hand-counting votes if you want to go old-school) to figure out who won the election!
+5. In the case that no test run was used for the form, you should verify that cell `A1` in your validation sheet has the proper range for the form responses, specifically starting at row 2 for both references to that sheet. Since Google Sheets essentially adds rows to the sheet on form submission, it may attempt to insert the row above row 2 if no submissions were already made, resulting in this changing. If you see an `N/A` error, this is most likely the issue.
+6. Check the results! After everyone has voted, you can first check to make sure a re-run isn't needed, and then use your election logic you added in (or hand-counting votes if you want to go old-school) to figure out who won the election!
 
 It is good practice to ensure everyone has voted and everyone's votes are counted. The number of filtered valid responses should be equal to the number of people voting. Hand-verification of votes can also be helpful in case your automated logic is incorrect. It is best to test several times with different inputs to ensure the logic is correct before using it.
 
