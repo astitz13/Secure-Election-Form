@@ -44,8 +44,7 @@ Anyways, here are the steps to run your election:
 2. Ensure the form name and form link are valid and correct.
 3. Click `Secure Elections > Send Emails` from the spreadsheet.
 4. Wait for everyone to vote. Everyone should receive an email with a validation code and a link to submit the form.
-5. In the case that no test run was used for the form, you should verify that cell `A1` in your validation sheet has the proper range for the form responses, specifically starting at row 2 for both references to that sheet. Since Google Sheets essentially adds rows to the sheet on form submission, it may attempt to insert the row above row 2 if no submissions were already made, resulting in this changing. If you see an `N/A` error, this is most likely the issue.
-6. Check the results! After everyone has voted, you can first check to make sure a re-run isn't needed, and then use your election logic you added in (or hand-counting votes if you want to go old-school) to figure out who won the election!
+5. Check the results! After everyone has voted, you can first check to make sure a re-run isn't needed, and then use your election logic you added in (or hand-counting votes if you want to go old-school) to figure out who won the election!
 
 It is good practice to ensure everyone has voted and everyone's votes are counted. The number of filtered valid responses should be equal to the number of people voting. Hand-verification of votes can also be helpful in case your automated logic is incorrect. It is best to test several times with different inputs to ensure the logic is correct before using it.
 
@@ -60,6 +59,11 @@ This script has several useful features to help run your election smoothly! Thes
 - **Compatibility with any vote-counting system** - Since this system is only used for authenticating votes and validating that each vote is only counted once (and nobody votes for someone else), you can add any system of vote-counting to the spreadsheet or even do it by hand! Some anonymous voting systems may come with a specific vote-counting system pre-included, but this system allows you to bring your own election logic while providing some of the most secure authentication methods possible for a Google Form made available to anyone with the link!
 - **Automated Spreadsheet Setup** - The latest version of this system automates the setup of your spreadsheet so you don't have to put in as much work to implement the secure election system!
 - **Automatic Implementation of Vote Counting** - The latest version of this system contains a few vote counting methods that can automatically be implemented with a click of a button, simplifying the process of running elections with common vote counting methods!
+
+## Planned Features
+
+- **More Vote Counting Methods** - Not all ballots are created equal, so future updates to this system will include additional vote counting methods, such as Ranked Choice Voting, Borda Count, Approval Voting, Score Voting, and the Condorcet Method.
+- **More Robust Detection of Necessary Recounts** - One benefit of using this system over a standard in-person secret ballot by paper is that it technically allows the identification of what verification code was used to double-vote. Specifically, if someone voted twice with the same verification code for all the same candidates, the duplicate vote could simply be removed and counting could continue as normal. While this can be determined manually, future updates of this system will include this more robust detection of the necessity of recounts to improve the efficiency of elections if someone does try to vote twice.
 
 ## The License
 
