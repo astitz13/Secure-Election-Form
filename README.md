@@ -12,45 +12,27 @@ To start setting up the election form, you need to create a simple Google Form. 
 
 This "Verification Code" question will allow the user to input the verification code they receive in their inbox to ensure their vote is securely counted.
 
-### Setting Up the Spreadsheet
+### Setting Up the Spreadsheet and Script
 
 The next step of setting up the form is setting up its corresponding spreadsheet. To do this, you first need to connect the Google Form to a newly created Google Sheets spreadsheet. You can do this from the "Responses" tab.
 
-The spreadsheet needs to be set up in a very specific way for this script to work properly.
+From your spreadsheet, click "Apps Script" from the "Extensions" menu. Now, place all the code in `Code.gs` into the script editor you see. 
 
-#### The 'Emails' Sheet
+The code will not immediately work, however. Click the plus sign next to "Services" in the left-hand menu. While here, you must add the Gmail API. This is what allows permanently deleting sent emails.
 
-You must create a new sheet, called "Emails" (no spaces, quotes, or punctuation). In this sheet, cell A1 needs to read "Email List", cell B1 needs to read "Valid Codes," cell D1 needs to read "Form Name:", and cell D2 needs to read "Form Link:". If capitalization is changed at all for these cells, the system will still work, but it is most readable if formatted exactly as listed.
+Now, you must add a trigger for the script. Specifically, on opening the spreadsheet, the onOpen function should run. To test this trigger, you can reload the spreadsheet and you should see a new menu titled, "Secure Elections."
 
-Range A2:A (column A starting with A2) should have a list of email addresses to send verification codes to. This can be automated, but works best manually, considering it might be possible for someone to enter two of their own email addresses if there is an automated self-registration system. Column B should not be edited and will be automatically edited by the script.
+Under this menu, click "Create Form Spreadsheet" to set up the spreadsheet as is necessary to verify votes. However, a few manual changes do need to be made as well.
+
+In the newly created "Emails" sheet, range A2:A (column A starting with A2) should have a list of email addresses to send verification codes to. This can be automated, but works best manually, considering it might be possible for someone to enter two of their own email addresses if there is an automated self-registration system. Column B should not be edited and will be automatically edited by the script.
 
 Cell E1 should have a name given to the election. No double quotes should be used here. If double quotes are used, the system to delete emails may fail and the security of the election may be compromised.
 
 Lastly, cell E2 should have the link to your form. You can find this link when you deploy the Google Form for submissions. 
 
-#### Election Validation
+### Vote Counting Systems
 
-After setting up the "Emails" sheet, you must create another sheet to validate responses. The name of this sheet doesn't matter. 
-
-In cell A1, put the formula `=ARRAYFORMULA('Form Responses 1'!A1:C1)`. This formula should be modified if the title of your form responses sheet is different or you have more than 3 columns in that sheet. This assumes that only one question on who to vote for is used (three columns being the timestamp, verification code, and this question). If two questions are used, `C1` should be replaced with `D1`, and this should be incremented accordingly for each additional question.
-
-In cell A2, the formula `=FILTER('Form Responses 1'!A$2:C,MATCH('Form Responses 1'!B$2:B,Emails!B1:B,0)>1)` should be used. The same edits should be made as in A1 as needed. Also, check to make sure the validation code is in column B of the form responses. If not, adjust `'Form Responses 1'!B$2:B` in the formula as needed.
-
-To calculate if the election needs to be rerun, choose a column far enough to the right as to not interfere with the form responses. In row 1 of this column, put a label, such as "Duplicates." In row 2, put the formula `=COUNTIF($B$2:$B,B2)`. Then, drag down with the blue dot at the bottom right corner of this cell to expand this to enough rows to cover all potential responses. After the election is conducted, this may need to be continued further so that each row with a response has a cell with a similar formula to this in the chosen column. Note that the formula will change. For example `B2` will change to `B3` in row 3.
-
-In the cell to the right of the label cell (which I used "Duplicates" for), put another label called "Re-run Needed". Beneath this cell (in row 2), put the formula `=IF(COUNTIF(I2:I,">1")>0,"Yes","No")`, replacing `I` with the chosen column earlier for the "Duplicates" column. When an election is run, if this says "Yes," there was an instance where the same validation code was used more than once and the election must be re-run.
-
-Lastly for setting up the spreadsheet, add whatever logic you need to determine the winner of the election. This system is compatible with all methods of counting votes, so just plug in the spreadsheet logic to determine your winner, whether popular vote, ranked choice, approval voting, the Condorcet method, etc., and the spreadsheet will be ready!
-
-### Setting Up the Script
-
-In addition to the Google Form and Google Sheets spreadsheet, the script needs to be added and set up. From your spreadsheet, click "Apps Script" from the "Extensions" menu. Now, place all the code in `Code.gs` into the script editor you see. 
-
-The code will not immediately work, however. Click the plus sign next to "Services" in the left-hand menu. While here, you must add the Gmail API. This is what allows permanently deleting sent emails.
-
-Now, you must add a trigger for the script. Specifically, on opening the spreadsheet, the onOpen function should run. To test this trigger, you can reload the spreadsheet and you should see a new menu titled, "Secure Elections." Under this menu is an option to "Send Emails."
-
-At this point, everything with your election form is completely set up and you can continue to test and run your election!
+It is possible to implement any vote counting method with this system. As long as you can implement a method in Google Sheets, you can use it, and even if you can't do that, it is possible to manually count the votes as well. However, there are also automated methods of vote counting that can be implemented through the "Implement Vote Counting" sub-menu. Currently, only plurality voting (most votes wins) and first past the post voting (candidate with 50% of the votes wins; might not happen which would show an error). However, future updates are expected to add more voting methods, such as Ranked Choice Voting and the Condorcet Method. If using the automated vote counting logic implementation, you should click on a cell in the same column or columns as the questions you want to add this vote counting method for before clicking the button to implement your preferred method. It is possible to implement this for multiple election questions at once by selecting a range containing multiple columns before clicking the button to add the method.
 
 ## Running the Election
 
@@ -62,8 +44,7 @@ Anyways, here are the steps to run your election:
 2. Ensure the form name and form link are valid and correct.
 3. Click `Secure Elections > Send Emails` from the spreadsheet.
 4. Wait for everyone to vote. Everyone should receive an email with a validation code and a link to submit the form.
-5. In the case that no test run was used for the form, you should verify that cell `A1` in your validation sheet has the proper range for the form responses, specifically starting at row 2 for both references to that sheet. Since Google Sheets essentially adds rows to the sheet on form submission, it may attempt to insert the row above row 2 if no submissions were already made, resulting in this changing. If you see an `N/A` error, this is most likely the issue.
-6. Check the results! After everyone has voted, you can first check to make sure a re-run isn't needed, and then use your election logic you added in (or hand-counting votes if you want to go old-school) to figure out who won the election!
+5. Check the results! After everyone has voted, you can first check to make sure a re-run isn't needed, and then use your election logic you added in (or hand-counting votes if you want to go old-school) to figure out who won the election!
 
 It is good practice to ensure everyone has voted and everyone's votes are counted. The number of filtered valid responses should be equal to the number of people voting. Hand-verification of votes can also be helpful in case your automated logic is incorrect. It is best to test several times with different inputs to ensure the logic is correct before using it.
 
@@ -76,6 +57,13 @@ This script has several useful features to help run your election smoothly! Thes
 - **Automatic email deletion** - Although your account is used as the host to send the emails, this script will automatically delete them so that only the recipient is able to see what their validation code is and anonymity of the election is preserved!
 - **Strict one-vote requirements** - Google Forms comes pre-packed with a system to make sure each email address can only vote once, but this allows you to make sure each person only votes once! People can use multiple email addresses to cheat most other systems, but this allows you to make sure each person only votes once while also not requiring email collection or restriction to an enterprise organization!
 - **Compatibility with any vote-counting system** - Since this system is only used for authenticating votes and validating that each vote is only counted once (and nobody votes for someone else), you can add any system of vote-counting to the spreadsheet or even do it by hand! Some anonymous voting systems may come with a specific vote-counting system pre-included, but this system allows you to bring your own election logic while providing some of the most secure authentication methods possible for a Google Form made available to anyone with the link!
+- **Automated Spreadsheet Setup** - The latest version of this system automates the setup of your spreadsheet so you don't have to put in as much work to implement the secure election system!
+- **Automatic Implementation of Vote Counting** - The latest version of this system contains a few vote counting methods that can automatically be implemented with a click of a button, simplifying the process of running elections with common vote counting methods!
+
+## Planned Features
+
+- **More Vote Counting Methods** - Not all ballots are created equal, so future updates to this system will include additional vote counting methods, such as Ranked Choice Voting, Borda Count, Approval Voting, Score Voting, and the Condorcet Method.
+- **More Robust Detection of Necessary Recounts** - One benefit of using this system over a standard in-person secret ballot by paper is that it technically allows the identification of what verification code was used to double-vote. Specifically, if someone voted twice with the same verification code for all the same candidates, the duplicate vote could simply be removed and counting could continue as normal. While this can be determined manually, future updates of this system will include this more robust detection of the necessity of recounts to improve the efficiency of elections if someone does try to vote twice.
 
 ## The License
 
